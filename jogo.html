@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Conhecimentos Gerais</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eeeeee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 0 10px #cccccc;
+        }
+
+        h1 {
+            color: #333333;
+        }
+
+        #pergunta {
+            font-size: 18px;
+            margin: 25px 0;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #2878d0;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #185ba5;
+        }
+
+        button:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #proxima {
+            background-color: #28a745;
+        }
+
+        #proxima:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Quiz de Conhecimentos Gerais</h1>
+
+        <p id="progresso">Pergunta 1</p>
+
+        <h2 id="pergunta"></h2>
+
+        <div id="alternativas"></div>
+
+        <p id="resultado"></p>
+
+        <button id="proxima" onclick="proximaPergunta()" hidden>
+            Próxima pergunta
+        </button>
+
+        <button id="reiniciar" onclick="reiniciarJogo()" hidden>
+            Jogar novamente
+        </button>
+    </div>
+
+    <script>
+
+        // ARRAY com as 15 perguntas do jogo
+        const perguntas = [
+            {
+                pergunta: "Qual é a capital do Brasil?",
+                alternativas: ["São Paulo", "Brasília", "Rio de Janeiro", "Salvador"],
+                correta: 1
+            },
+            {
+                pergunta: "Quantos planetas existem no Sistema Solar?",
+                alternativas: ["7", "8", "9", "10"],
+                correta: 1
+            },
+            {
+                pergunta: "Quem escreveu Dom Casmurro?",
+                alternativas: ["Machado de Assis", "José de Alencar", "Clarice Lispector", "Carlos Drummond"],
+                correta: 0
+            },
+            {
+                pergunta: "Qual é o maior animal do mundo?",
+                alternativas: ["Elefante", "Tubarão branco", "Baleia-azul", "Girafa"],
+                correta: 2
+            },
+            {
+                pergunta: "Quanto é 10 x 8?",
+                alternativas: ["70", "80", "90", "100"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual é o maior país do mundo em território?",
+                alternativas: ["China", "Estados Unidos", "Brasil", "Rússia"],
+                correta: 3
+            },
+            {
+                pergunta: "Em que ano o Brasil foi descoberto pelos portugueses?",
+                alternativas: ["1492", "1500", "1530", "1600"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual é o símbolo químico da água?",
+                alternativas: ["CO2", "O2", "H2O", "NaCl"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual planeta é conhecido como Planeta Vermelho?",
+                alternativas: ["Vênus", "Marte", "Júpiter", "Saturno"],
+                correta: 1
+            },
+            {
+                pergunta: "Quantos lados tem um hexágono?",
+                alternativas: ["5", "6", "7", "8"],
+                correta: 1
+            },
+            {
+                pergunta: "Qual é o maior oceano do planeta?",
+                alternativas: ["Atlântico", "Índico", "Ártico", "Pacífico"],
+                correta: 3
+            },
+            {
+                pergunta: "Quem pintou a Mona Lisa?",
+                alternativas: ["Van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual é o idioma mais falado no Brasil?",
+                alternativas: ["Espanhol", "Inglês", "Português", "Francês"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual é o resultado de 144 dividido por 12?",
+                alternativas: ["10", "11", "12", "14"],
+                correta: 2
+            },
+            {
+                pergunta: "Qual destes animais é um mamífero?",
+                alternativas: ["Tubarão", "Golfinho", "Jacaré", "Pinguim"],
+                correta: 1
+            }
+        ];
+
+        let indice = 0;
+        let pontos = 0;
+        let respondeu = false;
+
+        // FUNÇÃO para mostrar a pergunta
+        function mostrarPergunta() {
+
+            respondeu = false;
+
+            const perguntaAtual = perguntas[indice];
+
+            document.getElementById("pergunta").textContent =
+                perguntaAtual.pergunta;
+
+            document.getElementById("progresso").textContent =
+                "Pergunta " + (indice + 1) + " de " + perguntas.length;
+
+            document.getElementById("resultado").textContent = "";
+
+            document.getElementById("proxima").hidden = true;
+
+            const alternativas = document.getElementById("alternativas");
+
+            alternativas.innerHTML = "";
+
+            // LAÇO DE REPETIÇÃO para criar as alternativas
+            for (let i = 0; i < perguntaAtual.alternativas.length; i++) {
+
+                const botao = document.createElement("button");
+
+                botao.textContent = perguntaAtual.alternativas[i];
+
+                // EVENTO de clique
+                botao.addEventListener("click", function() {
+                    verificarResposta(i);
+                });
+
+                alternativas.appendChild(botao);
+            }
+        }
+
+        // FUNÇÃO para verificar a resposta
+        function verificarResposta(resposta) {
+
+            if (respondeu) return;
+
+            respondeu = true;
+
+            const perguntaAtual = perguntas[indice];
+
+            const botoes = document.querySelectorAll("#alternativas button");
+
+            botoes.forEach(function(botao) {
+                botao.disabled = true;
+            });
+
+            if (resposta === perguntaAtual.correta) {
+
+                pontos++;
+
+                document.getElementById("resultado").textContent =
+                    "Resposta correta! Parabéns!";
+
+            } else {
+
+                document.getElementById("resultado").textContent =
+                    "Resposta incorreta! A correta era: " +
+                    perguntaAtual.alternativas[perguntaAtual.correta];
+            }
+
+            document.getElementById("proxima").hidden = false;
+        }
+
+        // FUNÇÃO para avançar para a próxima pergunta
+        function proximaPergunta() {
+
+            indice++;
+
+            if (indice < perguntas.length) {
+
+                mostrarPergunta();
+
+            } else {
+
+                finalizarJogo();
+            }
+        }
+
+        // FUNÇÃO para mostrar o resultado final
+        function finalizarJogo() {
+
+            document.getElementById("pergunta").textContent =
+                "Fim de jogo!";
+
+            document.getElementById("progresso").textContent =
+                "Quiz finalizado";
+
+            document.getElementById("alternativas").innerHTML = "";
+
+            document.getElementById("resultado").textContent =
+                "Você acertou " + pontos + " de " + perguntas.length + " perguntas!";
+
+            document.getElementById("proxima").hidden = true;
+
+            document.getElementById("reiniciar").hidden = false;
+        }
+
+        // FUNÇÃO para reiniciar o jogo
+        function reiniciarJogo() {
+
+            indice = 0;
+            pontos = 0;
+
+            document.getElementById("reiniciar").hidden = true;
+
+            mostrarPergunta();
+        }
+
+        // INICIAR O JOGO
+        mostrarPergunta();
+
+    </script>
+
+</body>
+</html>
